@@ -117,7 +117,7 @@
         /* Main Layout */
         .main {
             display: grid;
-            grid-template-columns: 280px 1fr 320px;
+            grid-template-columns: 280px 1fr 340px;
             height: calc(100vh - 69px);
         }
 
@@ -165,30 +165,14 @@
             overflow: hidden;
         }
 
-        .effect-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            opacity: 0.1;
-            transition: opacity 0.2s;
-        }
-
         .effect-card:hover {
             border-color: var(--accent);
             transform: scale(1.02);
         }
 
-        .effect-card:hover::before {
-            opacity: 0.2;
-        }
-
         .effect-card.active {
             border-color: var(--accent);
             background: var(--accent-dim);
-        }
-
-        .effect-card.active::before {
-            opacity: 0.3;
         }
 
         .effect-icon {
@@ -352,8 +336,18 @@
             border-radius: 2px;
         }
 
+        .effect-params-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 20px 0 16px 0;
+            padding: 10px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
+        }
+
         .setting-group {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .setting-label {
@@ -397,11 +391,12 @@
         .color-picker-group {
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
         }
 
         .color-swatch {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 8px;
             cursor: pointer;
             border: 2px solid transparent;
@@ -417,10 +412,12 @@
         .toggle-group {
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
         }
 
         .toggle-btn {
             flex: 1;
+            min-width: 70px;
             padding: 10px;
             border-radius: 8px;
             background: var(--bg-tertiary);
@@ -441,6 +438,25 @@
             background: var(--accent-dim);
             border-color: var(--accent);
             color: var(--accent);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-size: 13px;
+            cursor: pointer;
         }
 
         /* Progress */
@@ -472,6 +488,13 @@
             transition: width 0.3s;
         }
 
+        /* Section divider */
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 20px 0;
+        }
+
         /* Hidden */
         .hidden {
             display: none !important;
@@ -487,23 +510,26 @@
             animation: pulse 1s ease-in-out infinite;
         }
 
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .main {
-                grid-template-columns: 240px 1fr 280px;
-            }
+        /* Scrollbar */
+        .settings-panel::-webkit-scrollbar,
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
         }
 
-        @media (max-width: 900px) {
-            .main {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr auto;
-            }
-            
-            .sidebar, .settings-panel {
-                border: none;
-                border-bottom: 1px solid var(--border);
-            }
+        .settings-panel::-webkit-scrollbar-track,
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        .settings-panel::-webkit-scrollbar-thumb,
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .settings-panel::-webkit-scrollbar-thumb:hover,
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
         }
     </style>
 </head>
@@ -525,7 +551,7 @@
             <div class="sidebar-section">
                 <div class="sidebar-title">スタイルエフェクト</div>
                 <div class="effect-grid">
-                    <div class="effect-card" data-effect="none">
+                    <div class="effect-card active" data-effect="none">
                         <div class="effect-icon">◯</div>
                         <div class="effect-name">オリジナル</div>
                     </div>
@@ -557,13 +583,21 @@
                         <div class="effect-icon">📼</div>
                         <div class="effect-name">VHS</div>
                     </div>
+                    <div class="effect-card" data-effect="thermal">
+                        <div class="effect-icon">🌡️</div>
+                        <div class="effect-name">Thermal</div>
+                    </div>
+                    <div class="effect-card" data-effect="watercolor">
+                        <div class="effect-icon">🎨</div>
+                        <div class="effect-name">Watercolor</div>
+                    </div>
                 </div>
             </div>
 
             <div class="sidebar-section">
                 <div class="sidebar-title">オーバーレイ</div>
                 <div class="effect-grid">
-                    <div class="effect-card" data-overlay="none">
+                    <div class="effect-card active" data-overlay="none">
                         <div class="effect-icon">✕</div>
                         <div class="effect-name">なし</div>
                     </div>
@@ -606,22 +640,14 @@
 
         <!-- Right Panel - Settings -->
         <aside class="settings-panel">
-            <div class="panel-title">エフェクト設定</div>
+            <div class="panel-title">グローバル設定</div>
 
             <div class="setting-group">
                 <div class="setting-label">
-                    <span>強度</span>
+                    <span>エフェクト強度</span>
                     <span class="setting-value" id="intensityValue">100%</span>
                 </div>
                 <input type="range" class="slider" id="intensitySlider" min="0" max="100" value="100">
-            </div>
-
-            <div class="setting-group">
-                <div class="setting-label">
-                    <span>コントラスト</span>
-                    <span class="setting-value" id="contrastValue">100%</span>
-                </div>
-                <input type="range" class="slider" id="contrastSlider" min="50" max="200" value="100">
             </div>
 
             <div class="setting-group">
@@ -634,31 +660,32 @@
 
             <div class="setting-group">
                 <div class="setting-label">
+                    <span>コントラスト</span>
+                    <span class="setting-value" id="contrastValue">100%</span>
+                </div>
+                <input type="range" class="slider" id="contrastSlider" min="50" max="200" value="100">
+            </div>
+
+            <div class="setting-group">
+                <div class="setting-label">
                     <span>彩度</span>
                     <span class="setting-value" id="saturationValue">100%</span>
                 </div>
                 <input type="range" class="slider" id="saturationSlider" min="0" max="200" value="100">
             </div>
 
-            <div class="setting-group">
-                <div class="setting-label">エッジカラー</div>
-                <div class="color-picker-group">
-                    <div class="color-swatch active" data-color="#00ff88" style="background: #00ff88;"></div>
-                    <div class="color-swatch" data-color="#ff4466" style="background: #ff4466;"></div>
-                    <div class="color-swatch" data-color="#00ccff" style="background: #00ccff;"></div>
-                    <div class="color-swatch" data-color="#ffcc00" style="background: #ffcc00;"></div>
-                    <div class="color-swatch" data-color="#ff00ff" style="background: #ff00ff;"></div>
-                    <div class="color-swatch" data-color="#ffffff" style="background: #ffffff;"></div>
-                </div>
+            <div class="divider"></div>
+
+            <!-- Effect-specific parameters -->
+            <div id="effectParams">
+                <!-- Dynamically populated -->
             </div>
 
-            <div class="setting-group">
-                <div class="setting-label">ブレンドモード</div>
-                <div class="toggle-group">
-                    <button class="toggle-btn active" data-blend="normal">通常</button>
-                    <button class="toggle-btn" data-blend="screen">スクリーン</button>
-                    <button class="toggle-btn" data-blend="multiply">乗算</button>
-                </div>
+            <div class="divider"></div>
+
+            <!-- Overlay parameters -->
+            <div id="overlayParams">
+                <!-- Dynamically populated -->
             </div>
 
             <div class="progress-container hidden" id="progressContainer">
@@ -674,6 +701,130 @@
     </main>
 
     <script>
+        // Effect Parameters Definitions
+        const effectParamsConfig = {
+            none: {
+                title: 'オリジナル',
+                params: []
+            },
+            sketch: {
+                title: '✏️ Sketch パラメーター',
+                params: [
+                    { id: 'sketchThreshold', label: 'エッジ感度', min: 50, max: 300, default: 150, unit: '' },
+                    { id: 'sketchLineWeight', label: '線の太さ', min: 1, max: 5, default: 1, unit: 'px' },
+                    { id: 'sketchInvert', label: '反転（白背景）', type: 'checkbox', default: true },
+                    { id: 'sketchColor', label: '線の色', type: 'color', colors: ['#000000', '#333333', '#1a1a2e', '#2d4059', '#ea5455'], default: '#000000' }
+                ]
+            },
+            neon: {
+                title: '💡 Neon パラメーター',
+                params: [
+                    { id: 'neonGlow', label: 'グロー強度', min: 0, max: 100, default: 70, unit: '%' },
+                    { id: 'neonThreshold', label: 'エッジ感度', min: 50, max: 300, default: 120, unit: '' },
+                    { id: 'neonBlur', label: 'ブラー', min: 0, max: 20, default: 3, unit: 'px' },
+                    { id: 'neonColor', label: 'グローカラー', type: 'color', colors: ['#00ff88', '#ff00ff', '#00ffff', '#ffff00', '#ff4466', '#8b5cf6'], default: '#00ff88' },
+                    { id: 'neonBgDark', label: '背景を暗く', type: 'checkbox', default: true }
+                ]
+            },
+            comic: {
+                title: '💥 Comic パラメーター',
+                params: [
+                    { id: 'comicLevels', label: '色の段階数', min: 2, max: 8, default: 5, unit: '段階' },
+                    { id: 'comicSaturation', label: '彩度ブースト', min: 100, max: 250, default: 150, unit: '%' },
+                    { id: 'comicOutline', label: '輪郭線', type: 'checkbox', default: true },
+                    { id: 'comicOutlineThickness', label: '輪郭の太さ', min: 1, max: 5, default: 2, unit: 'px' },
+                    { id: 'comicHalftone', label: 'ハーフトーン', type: 'checkbox', default: false }
+                ]
+            },
+            noir: {
+                title: '🎬 Noir パラメーター',
+                params: [
+                    { id: 'noirContrast', label: 'コントラスト', min: 100, max: 300, default: 180, unit: '%' },
+                    { id: 'noirShadows', label: 'シャドウの深さ', min: 0, max: 100, default: 30, unit: '%' },
+                    { id: 'noirHighlights', label: 'ハイライト', min: 0, max: 100, default: 50, unit: '%' },
+                    { id: 'noirTint', label: 'セピア調', type: 'checkbox', default: false },
+                    { id: 'noirGrain', label: 'フィルムグレイン', min: 0, max: 50, default: 15, unit: '%' }
+                ]
+            },
+            glitch: {
+                title: '📺 Glitch パラメーター',
+                params: [
+                    { id: 'glitchIntensity', label: 'グリッチ強度', min: 0, max: 100, default: 50, unit: '%' },
+                    { id: 'glitchSlices', label: 'スライス数', min: 5, max: 30, default: 15, unit: '' },
+                    { id: 'glitchRgbShift', label: 'RGB分離', min: 0, max: 30, default: 10, unit: 'px' },
+                    { id: 'glitchSpeed', label: '変化速度', min: 1, max: 10, default: 5, unit: '' },
+                    { id: 'glitchScanlines', label: 'スキャンライン', type: 'checkbox', default: true }
+                ]
+            },
+            pixel: {
+                title: '👾 Pixel パラメーター',
+                params: [
+                    { id: 'pixelSize', label: 'ピクセルサイズ', min: 2, max: 32, default: 8, unit: 'px' },
+                    { id: 'pixelColorLimit', label: '色数制限', min: 4, max: 256, default: 64, unit: '色' },
+                    { id: 'pixelDither', label: 'ディザリング', type: 'checkbox', default: false },
+                    { id: 'pixelOutline', label: 'ピクセル境界線', type: 'checkbox', default: false }
+                ]
+            },
+            vhs: {
+                title: '📼 VHS パラメーター',
+                params: [
+                    { id: 'vhsWobble', label: '揺れ', min: 0, max: 20, default: 5, unit: 'px' },
+                    { id: 'vhsChroma', label: '色収差', min: 0, max: 20, default: 8, unit: 'px' },
+                    { id: 'vhsNoise', label: 'ノイズ量', min: 0, max: 100, default: 30, unit: '%' },
+                    { id: 'vhsTracking', label: 'トラッキング線', type: 'checkbox', default: true },
+                    { id: 'vhsBlur', label: 'ぼかし', min: 0, max: 5, default: 1, unit: 'px' },
+                    { id: 'vhsTimestamp', label: 'タイムスタンプ', type: 'checkbox', default: false }
+                ]
+            },
+            thermal: {
+                title: '🌡️ Thermal パラメーター',
+                params: [
+                    { id: 'thermalPalette', label: 'カラーパレット', type: 'toggle', options: ['Iron', 'Rainbow', 'White Hot'], default: 'Iron' },
+                    { id: 'thermalContrast', label: 'コントラスト', min: 50, max: 200, default: 120, unit: '%' },
+                    { id: 'thermalSmooth', label: 'スムージング', min: 0, max: 10, default: 2, unit: '' },
+                    { id: 'thermalInvert', label: '反転', type: 'checkbox', default: false }
+                ]
+            },
+            watercolor: {
+                title: '🎨 Watercolor パラメーター',
+                params: [
+                    { id: 'watercolorBlur', label: 'にじみ', min: 1, max: 10, default: 4, unit: '' },
+                    { id: 'watercolorEdge', label: 'エッジ強調', min: 0, max: 100, default: 30, unit: '%' },
+                    { id: 'watercolorSaturation', label: '彩度', min: 50, max: 200, default: 130, unit: '%' },
+                    { id: 'watercolorPaper', label: '紙テクスチャ', type: 'checkbox', default: true },
+                    { id: 'watercolorBleed', label: 'にじみ方向', type: 'toggle', options: ['なし', '下方向', 'ランダム'], default: 'なし' }
+                ]
+            }
+        };
+
+        const overlayParamsConfig = {
+            none: { title: '', params: [] },
+            grain: {
+                title: '🌾 Grain パラメーター',
+                params: [
+                    { id: 'grainAmount', label: 'グレイン量', min: 0, max: 100, default: 30, unit: '%' },
+                    { id: 'grainSize', label: '粒の大きさ', min: 1, max: 5, default: 1, unit: '' },
+                    { id: 'grainColor', label: 'カラーグレイン', type: 'checkbox', default: false }
+                ]
+            },
+            scanlines: {
+                title: '▤ Scanlines パラメーター',
+                params: [
+                    { id: 'scanlinesSpacing', label: '間隔', min: 2, max: 10, default: 4, unit: 'px' },
+                    { id: 'scanlinesOpacity', label: '不透明度', min: 5, max: 50, default: 15, unit: '%' },
+                    { id: 'scanlinesAnimate', label: 'アニメーション', type: 'checkbox', default: false }
+                ]
+            },
+            vignette: {
+                title: '⬭ Vignette パラメーター',
+                params: [
+                    { id: 'vignetteSize', label: 'サイズ', min: 30, max: 100, default: 70, unit: '%' },
+                    { id: 'vignetteIntensity', label: '強度', min: 20, max: 100, default: 70, unit: '%' },
+                    { id: 'vignetteSoftness', label: 'ソフトネス', min: 0, max: 100, default: 50, unit: '%' }
+                ]
+            }
+        };
+
         // State
         const state = {
             video: null,
@@ -683,12 +834,29 @@
             contrast: 100,
             brightness: 100,
             saturation: 100,
-            edgeColor: '#00ff88',
-            blendMode: 'normal',
             isPlaying: false,
             isLooping: true,
-            animationId: null
+            animationId: null,
+            effectParams: {},
+            overlayParams: {}
         };
+
+        // Initialize effect params with defaults
+        Object.keys(effectParamsConfig).forEach(effect => {
+            state.effectParams[effect] = {};
+            effectParamsConfig[effect].params.forEach(param => {
+                state.effectParams[effect][param.id] = param.default;
+            });
+        });
+
+        Object.keys(overlayParamsConfig).forEach(overlay => {
+            state.overlayParams[overlay] = {};
+            if (overlayParamsConfig[overlay].params) {
+                overlayParamsConfig[overlay].params.forEach(param => {
+                    state.overlayParams[overlay][param.id] = param.default;
+                });
+            }
+        });
 
         // Elements
         const uploadZone = document.getElementById('uploadZone');
@@ -703,6 +871,8 @@
         const loopBtn = document.getElementById('loopBtn');
         const exportBtn = document.getElementById('exportBtn');
         const resetBtn = document.getElementById('resetBtn');
+        const effectParamsContainer = document.getElementById('effectParams');
+        const overlayParamsContainer = document.getElementById('overlayParams');
 
         // File Upload
         uploadZone.addEventListener('click', () => fileInput.click());
@@ -801,6 +971,98 @@
             state.animationId = requestAnimationFrame(animate);
         }
 
+        // Generate UI for effect parameters
+        function generateParamsUI(config, container, stateObj, prefix) {
+            container.innerHTML = '';
+            
+            if (!config.params || config.params.length === 0) return;
+
+            const title = document.createElement('div');
+            title.className = 'effect-params-title';
+            title.textContent = config.title;
+            container.appendChild(title);
+
+            config.params.forEach(param => {
+                const group = document.createElement('div');
+                group.className = 'setting-group';
+
+                if (param.type === 'checkbox') {
+                    group.innerHTML = `
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="${param.id}" ${stateObj[param.id] ? 'checked' : ''}>
+                            <label for="${param.id}">${param.label}</label>
+                        </div>
+                    `;
+                    container.appendChild(group);
+                    
+                    const checkbox = group.querySelector('input');
+                    checkbox.addEventListener('change', () => {
+                        stateObj[param.id] = checkbox.checked;
+                        renderFrame();
+                    });
+                } else if (param.type === 'color') {
+                    group.innerHTML = `
+                        <div class="setting-label"><span>${param.label}</span></div>
+                        <div class="color-picker-group">
+                            ${param.colors.map(c => `
+                                <div class="color-swatch ${stateObj[param.id] === c ? 'active' : ''}" 
+                                     data-param="${param.id}" data-color="${c}" 
+                                     style="background: ${c};"></div>
+                            `).join('')}
+                        </div>
+                    `;
+                    container.appendChild(group);
+
+                    group.querySelectorAll('.color-swatch').forEach(swatch => {
+                        swatch.addEventListener('click', () => {
+                            group.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                            swatch.classList.add('active');
+                            stateObj[param.id] = swatch.dataset.color;
+                            renderFrame();
+                        });
+                    });
+                } else if (param.type === 'toggle') {
+                    group.innerHTML = `
+                        <div class="setting-label"><span>${param.label}</span></div>
+                        <div class="toggle-group">
+                            ${param.options.map(opt => `
+                                <button class="toggle-btn ${stateObj[param.id] === opt ? 'active' : ''}" 
+                                        data-param="${param.id}" data-value="${opt}">${opt}</button>
+                            `).join('')}
+                        </div>
+                    `;
+                    container.appendChild(group);
+
+                    group.querySelectorAll('.toggle-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+                            btn.classList.add('active');
+                            stateObj[param.id] = btn.dataset.value;
+                            renderFrame();
+                        });
+                    });
+                } else {
+                    // Slider
+                    group.innerHTML = `
+                        <div class="setting-label">
+                            <span>${param.label}</span>
+                            <span class="setting-value" id="${param.id}Value">${stateObj[param.id]}${param.unit}</span>
+                        </div>
+                        <input type="range" class="slider" id="${param.id}" 
+                               min="${param.min}" max="${param.max}" value="${stateObj[param.id]}">
+                    `;
+                    container.appendChild(group);
+
+                    const slider = group.querySelector('input');
+                    slider.addEventListener('input', () => {
+                        stateObj[param.id] = parseFloat(slider.value);
+                        document.getElementById(`${param.id}Value`).textContent = slider.value + param.unit;
+                        renderFrame();
+                    });
+                }
+            });
+        }
+
         // Effects Processing
         function renderFrame() {
             if (!state.video) return;
@@ -822,28 +1084,35 @@
             if (state.effect !== 'none' && state.intensity > 0) {
                 const effectData = ctx.createImageData(w, h);
                 const effectPixels = effectData.data;
+                const params = state.effectParams[state.effect];
                 
                 switch (state.effect) {
                     case 'sketch':
-                        applySketchEffect(data, effectPixels, w, h);
+                        applySketchEffect(data, effectPixels, w, h, params);
                         break;
                     case 'neon':
-                        applyNeonEffect(data, effectPixels, w, h);
+                        applyNeonEffect(data, effectPixels, w, h, params);
                         break;
                     case 'comic':
-                        applyComicEffect(data, effectPixels, w, h);
+                        applyComicEffect(data, effectPixels, w, h, params);
                         break;
                     case 'noir':
-                        applyNoirEffect(data, effectPixels, w, h);
+                        applyNoirEffect(data, effectPixels, w, h, params);
                         break;
                     case 'glitch':
-                        applyGlitchEffect(data, effectPixels, w, h);
+                        applyGlitchEffect(data, effectPixels, w, h, params);
                         break;
                     case 'pixel':
-                        applyPixelEffect(data, effectPixels, w, h);
+                        applyPixelEffect(data, effectPixels, w, h, params);
                         break;
                     case 'vhs':
-                        applyVHSEffect(data, effectPixels, w, h);
+                        applyVHSEffect(data, effectPixels, w, h, params);
+                        break;
+                    case 'thermal':
+                        applyThermalEffect(data, effectPixels, w, h, params);
+                        break;
+                    case 'watercolor':
+                        applyWatercolorEffect(data, effectPixels, w, h, params);
                         break;
                     default:
                         effectPixels.set(data);
@@ -861,7 +1130,9 @@
             ctx.putImageData(imageData, 0, 0);
 
             // Apply overlays
-            applyOverlay(w, h);
+            if (state.overlay !== 'none') {
+                applyOverlay(w, h, state.overlayParams[state.overlay]);
+            }
         }
 
         function applyAdjustments(data) {
@@ -874,17 +1145,14 @@
                 let g = data[i + 1];
                 let b = data[i + 2];
 
-                // Brightness
                 r *= brightness;
                 g *= brightness;
                 b *= brightness;
 
-                // Contrast
                 r = ((r / 255 - 0.5) * contrast + 0.5) * 255;
                 g = ((g / 255 - 0.5) * contrast + 0.5) * 255;
                 b = ((b / 255 - 0.5) * contrast + 0.5) * 255;
 
-                // Saturation
                 const gray = 0.299 * r + 0.587 * g + 0.114 * b;
                 r = gray + (r - gray) * saturation;
                 g = gray + (g - gray) * saturation;
@@ -896,9 +1164,26 @@
             }
         }
 
+        // Utility
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 0, g: 255, b: 136 };
+        }
+
+        function getGrayscale(data, i) {
+            return 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+        }
+
         // Effect Functions
-        function applySketchEffect(src, dst, w, h) {
-            // Sobel edge detection
+        function applySketchEffect(src, dst, w, h, params) {
+            const threshold = params.sketchThreshold;
+            const invert = params.sketchInvert;
+            const lineColor = hexToRgb(params.sketchColor);
+            
             const sobelX = [-1, 0, 1, -2, 0, 2, -1, 0, 1];
             const sobelY = [-1, -2, -1, 0, 0, 0, 1, 2, 1];
 
@@ -909,7 +1194,7 @@
                     for (let ky = -1; ky <= 1; ky++) {
                         for (let kx = -1; kx <= 1; kx++) {
                             const idx = ((y + ky) * w + (x + kx)) * 4;
-                            const gray = (src[idx] + src[idx + 1] + src[idx + 2]) / 3;
+                            const gray = getGrayscale(src, idx);
                             const ki = (ky + 1) * 3 + (kx + 1);
                             gx += gray * sobelX[ki];
                             gy += gray * sobelY[ki];
@@ -917,19 +1202,30 @@
                     }
                     
                     const edge = Math.sqrt(gx * gx + gy * gy);
-                    const val = 255 - Math.min(255, edge);
+                    const edgeNorm = Math.min(1, edge / threshold);
                     
                     const i = (y * w + x) * 4;
-                    dst[i] = val;
-                    dst[i + 1] = val;
-                    dst[i + 2] = val;
+                    
+                    if (invert) {
+                        dst[i] = 255 - edgeNorm * (255 - lineColor.r);
+                        dst[i + 1] = 255 - edgeNorm * (255 - lineColor.g);
+                        dst[i + 2] = 255 - edgeNorm * (255 - lineColor.b);
+                    } else {
+                        dst[i] = edgeNorm * lineColor.r;
+                        dst[i + 1] = edgeNorm * lineColor.g;
+                        dst[i + 2] = edgeNorm * lineColor.b;
+                    }
                     dst[i + 3] = 255;
                 }
             }
         }
 
-        function applyNeonEffect(src, dst, w, h) {
-            const color = hexToRgb(state.edgeColor);
+        function applyNeonEffect(src, dst, w, h, params) {
+            const color = hexToRgb(params.neonColor);
+            const glowIntensity = params.neonGlow / 100;
+            const threshold = params.neonThreshold;
+            const bgDark = params.neonBgDark;
+            
             const sobelX = [-1, 0, 1, -2, 0, 2, -1, 0, 1];
             const sobelY = [-1, -2, -1, 0, 0, 0, 1, 2, 1];
 
@@ -940,39 +1236,86 @@
                     for (let ky = -1; ky <= 1; ky++) {
                         for (let kx = -1; kx <= 1; kx++) {
                             const idx = ((y + ky) * w + (x + kx)) * 4;
-                            const gray = (src[idx] + src[idx + 1] + src[idx + 2]) / 3;
+                            const gray = getGrayscale(src, idx);
                             const ki = (ky + 1) * 3 + (kx + 1);
                             gx += gray * sobelX[ki];
                             gy += gray * sobelY[ki];
                         }
                     }
                     
-                    const edge = Math.min(1, Math.sqrt(gx * gx + gy * gy) / 200);
-                    const glow = Math.pow(edge, 0.5);
+                    const edge = Math.min(1, Math.sqrt(gx * gx + gy * gy) / threshold);
+                    const glow = Math.pow(edge, 0.5) * glowIntensity;
                     
                     const i = (y * w + x) * 4;
-                    dst[i] = glow * color.r;
-                    dst[i + 1] = glow * color.g;
-                    dst[i + 2] = glow * color.b;
+                    
+                    if (bgDark) {
+                        dst[i] = glow * color.r;
+                        dst[i + 1] = glow * color.g;
+                        dst[i + 2] = glow * color.b;
+                    } else {
+                        dst[i] = src[i] * 0.3 + glow * color.r;
+                        dst[i + 1] = src[i + 1] * 0.3 + glow * color.g;
+                        dst[i + 2] = src[i + 2] * 0.3 + glow * color.b;
+                    }
                     dst[i + 3] = 255;
                 }
             }
         }
 
-        function applyComicEffect(src, dst, w, h) {
-            // Posterize + edge detection
-            const levels = 5;
+        function applyComicEffect(src, dst, w, h, params) {
+            const levels = params.comicLevels;
+            const satBoost = params.comicSaturation / 100;
+            const outline = params.comicOutline;
+            const halftone = params.comicHalftone;
+            
+            // Edge detection for outline
+            let edges = null;
+            if (outline) {
+                edges = new Float32Array(w * h);
+                const sobelX = [-1, 0, 1, -2, 0, 2, -1, 0, 1];
+                const sobelY = [-1, -2, -1, 0, 0, 0, 1, 2, 1];
+                
+                for (let y = 1; y < h - 1; y++) {
+                    for (let x = 1; x < w - 1; x++) {
+                        let gx = 0, gy = 0;
+                        for (let ky = -1; ky <= 1; ky++) {
+                            for (let kx = -1; kx <= 1; kx++) {
+                                const idx = ((y + ky) * w + (x + kx)) * 4;
+                                const gray = getGrayscale(src, idx);
+                                const ki = (ky + 1) * 3 + (kx + 1);
+                                gx += gray * sobelX[ki];
+                                gy += gray * sobelY[ki];
+                            }
+                        }
+                        edges[y * w + x] = Math.sqrt(gx * gx + gy * gy);
+                    }
+                }
+            }
             
             for (let i = 0; i < src.length; i += 4) {
-                let r = Math.floor(src[i] / (256 / levels)) * (256 / levels);
-                let g = Math.floor(src[i + 1] / (256 / levels)) * (256 / levels);
-                let b = Math.floor(src[i + 2] / (256 / levels)) * (256 / levels);
+                let r = Math.floor(src[i] / (256 / levels)) * (256 / levels) + (128 / levels);
+                let g = Math.floor(src[i + 1] / (256 / levels)) * (256 / levels) + (128 / levels);
+                let b = Math.floor(src[i + 2] / (256 / levels)) * (256 / levels) + (128 / levels);
                 
-                // Boost saturation
                 const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-                r = gray + (r - gray) * 1.5;
-                g = gray + (g - gray) * 1.5;
-                b = gray + (b - gray) * 1.5;
+                r = gray + (r - gray) * satBoost;
+                g = gray + (g - gray) * satBoost;
+                b = gray + (b - gray) * satBoost;
+                
+                const pixelIndex = i / 4;
+                
+                if (outline && edges && edges[pixelIndex] > 100) {
+                    r = g = b = 0;
+                }
+                
+                if (halftone) {
+                    const x = pixelIndex % w;
+                    const y = Math.floor(pixelIndex / w);
+                    const pattern = ((x + y) % 4 < 2) ? 1 : 0.9;
+                    r *= pattern;
+                    g *= pattern;
+                    b *= pattern;
+                }
                 
                 dst[i] = Math.max(0, Math.min(255, r));
                 dst[i + 1] = Math.max(0, Math.min(255, g));
@@ -981,51 +1324,112 @@
             }
         }
 
-        function applyNoirEffect(src, dst, w, h) {
+        function applyNoirEffect(src, dst, w, h, params) {
+            const contrast = params.noirContrast / 100;
+            const shadows = params.noirShadows / 100;
+            const highlights = params.noirHighlights / 100;
+            const tint = params.noirTint;
+            const grain = params.noirGrain / 100;
+            
             for (let i = 0; i < src.length; i += 4) {
-                const gray = 0.299 * src[i] + 0.587 * src[i + 1] + 0.114 * src[i + 2];
-                // High contrast B&W
-                const val = ((gray / 255 - 0.5) * 1.8 + 0.5) * 255;
-                const clamped = Math.max(0, Math.min(255, val));
+                let gray = getGrayscale(src, i);
                 
-                dst[i] = clamped;
-                dst[i + 1] = clamped;
-                dst[i + 2] = clamped;
+                // Apply contrast curve
+                gray = ((gray / 255 - 0.5) * contrast + 0.5) * 255;
+                
+                // Shadows and highlights
+                if (gray < 128) {
+                    gray = gray * (1 - shadows * 0.5);
+                } else {
+                    gray = gray + (255 - gray) * highlights * 0.3;
+                }
+                
+                // Add grain
+                if (grain > 0) {
+                    gray += (Math.random() - 0.5) * grain * 100;
+                }
+                
+                gray = Math.max(0, Math.min(255, gray));
+                
+                if (tint) {
+                    dst[i] = gray * 1.1;
+                    dst[i + 1] = gray * 1.0;
+                    dst[i + 2] = gray * 0.9;
+                } else {
+                    dst[i] = gray;
+                    dst[i + 1] = gray;
+                    dst[i + 2] = gray;
+                }
                 dst[i + 3] = 255;
             }
         }
 
-        function applyGlitchEffect(src, dst, w, h) {
-            const time = Date.now() / 100;
-            const sliceCount = 10 + Math.floor(Math.random() * 10);
+        function applyGlitchEffect(src, dst, w, h, params) {
+            const intensity = params.glitchIntensity / 100;
+            const sliceCount = params.glitchSlices;
+            const rgbShift = params.glitchRgbShift;
+            const speed = params.glitchSpeed;
+            const scanlines = params.glitchScanlines;
             
             dst.set(src);
             
-            for (let s = 0; s < sliceCount; s++) {
-                if (Math.random() > 0.7) {
-                    const y = Math.floor(Math.random() * h);
-                    const sliceH = Math.floor(Math.random() * 20) + 5;
-                    const offset = Math.floor((Math.random() - 0.5) * 40);
+            const time = Date.now() / (200 / speed);
+            
+            // RGB shift
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    const i = (y * w + x) * 4;
+                    const shiftX = Math.floor(rgbShift * Math.sin(time + y * 0.01));
                     
-                    for (let dy = 0; dy < sliceH && y + dy < h; dy++) {
-                        for (let x = 0; x < w; x++) {
-                            const srcX = Math.max(0, Math.min(w - 1, x + offset));
-                            const srcI = ((y + dy) * w + srcX) * 4;
-                            const dstI = ((y + dy) * w + x) * 4;
-                            
-                            // RGB shift
-                            dst[dstI] = src[srcI + (Math.random() > 0.5 ? 4 : 0)] || src[srcI];
-                            dst[dstI + 1] = src[srcI + 1];
-                            dst[dstI + 2] = src[Math.max(0, srcI - 4) + 2] || src[srcI + 2];
-                            dst[dstI + 3] = 255;
-                        }
+                    const rIdx = (y * w + Math.max(0, Math.min(w - 1, x - shiftX))) * 4;
+                    const bIdx = (y * w + Math.max(0, Math.min(w - 1, x + shiftX))) * 4;
+                    
+                    dst[i] = src[rIdx];
+                    dst[i + 2] = src[bIdx + 2];
+                }
+            }
+            
+            // Slice displacement
+            for (let s = 0; s < sliceCount * intensity; s++) {
+                if (Math.random() > 0.5) continue;
+                
+                const y = Math.floor(Math.random() * h);
+                const sliceH = Math.floor(Math.random() * 30) + 5;
+                const offset = Math.floor((Math.random() - 0.5) * 60 * intensity);
+                
+                for (let dy = 0; dy < sliceH && y + dy < h; dy++) {
+                    for (let x = 0; x < w; x++) {
+                        const srcX = Math.max(0, Math.min(w - 1, x + offset));
+                        const srcI = ((y + dy) * w + srcX) * 4;
+                        const dstI = ((y + dy) * w + x) * 4;
+                        
+                        dst[dstI] = src[srcI];
+                        dst[dstI + 1] = src[srcI + 1];
+                        dst[dstI + 2] = src[srcI + 2];
+                    }
+                }
+            }
+            
+            // Scanlines
+            if (scanlines) {
+                for (let y = 0; y < h; y += 3) {
+                    for (let x = 0; x < w; x++) {
+                        const i = (y * w + x) * 4;
+                        dst[i] *= 0.8;
+                        dst[i + 1] *= 0.8;
+                        dst[i + 2] *= 0.8;
                     }
                 }
             }
         }
 
-        function applyPixelEffect(src, dst, w, h) {
-            const pixelSize = 8;
+        function applyPixelEffect(src, dst, w, h, params) {
+            const pixelSize = params.pixelSize;
+            const colorLimit = params.pixelColorLimit;
+            const dither = params.pixelDither;
+            const outline = params.pixelOutline;
+            
+            const step = 256 / Math.cbrt(colorLimit);
             
             for (let y = 0; y < h; y += pixelSize) {
                 for (let x = 0; x < w; x += pixelSize) {
@@ -1041,16 +1445,32 @@
                         }
                     }
                     
-                    r = Math.floor(r / count);
-                    g = Math.floor(g / count);
-                    b = Math.floor(b / count);
+                    r = Math.floor(r / count / step) * step;
+                    g = Math.floor(g / count / step) * step;
+                    b = Math.floor(b / count / step) * step;
                     
                     for (let py = 0; py < pixelSize && y + py < h; py++) {
                         for (let px = 0; px < pixelSize && x + px < w; px++) {
                             const i = ((y + py) * w + (x + px)) * 4;
-                            dst[i] = r;
-                            dst[i + 1] = g;
-                            dst[i + 2] = b;
+                            
+                            let fr = r, fg = g, fb = b;
+                            
+                            if (dither) {
+                                const ditherAmount = (Math.random() - 0.5) * step * 0.5;
+                                fr += ditherAmount;
+                                fg += ditherAmount;
+                                fb += ditherAmount;
+                            }
+                            
+                            if (outline && (py === 0 || px === 0)) {
+                                fr *= 0.7;
+                                fg *= 0.7;
+                                fb *= 0.7;
+                            }
+                            
+                            dst[i] = Math.max(0, Math.min(255, fr));
+                            dst[i + 1] = Math.max(0, Math.min(255, fg));
+                            dst[i + 2] = Math.max(0, Math.min(255, fb));
                             dst[i + 3] = 255;
                         }
                     }
@@ -1058,90 +1478,220 @@
             }
         }
 
-        function applyVHSEffect(src, dst, w, h) {
+        function applyVHSEffect(src, dst, w, h, params) {
+            const wobble = params.vhsWobble;
+            const chroma = params.vhsChroma;
+            const noise = params.vhsNoise / 100;
+            const tracking = params.vhsTracking;
+            const blur = params.vhsBlur;
+            
             const time = Date.now() / 50;
             
+            // Tracking line position
+            const trackingY = tracking ? Math.floor((time * 3) % h) : -1;
+            
             for (let y = 0; y < h; y++) {
-                const wobble = Math.sin(y * 0.1 + time) * 2;
+                const rowWobble = Math.sin(y * 0.1 + time) * wobble;
+                const isTrackingLine = tracking && Math.abs(y - trackingY) < 10;
                 
                 for (let x = 0; x < w; x++) {
-                    const srcX = Math.max(0, Math.min(w - 1, Math.floor(x + wobble)));
+                    let srcX = Math.max(0, Math.min(w - 1, Math.floor(x + rowWobble)));
+                    
+                    if (isTrackingLine) {
+                        srcX = Math.max(0, Math.min(w - 1, srcX + Math.floor(Math.random() * 20 - 10)));
+                    }
+                    
                     const i = (y * w + x) * 4;
                     const si = (y * w + srcX) * 4;
                     
                     // Chromatic aberration
-                    dst[i] = src[Math.max(0, si - 8)] || src[si];
+                    const rIdx = Math.max(0, Math.min((w - 1), srcX - chroma)) * 4 + y * w * 4;
+                    const bIdx = Math.min((w - 1), srcX + chroma) * 4 + y * w * 4;
+                    
+                    dst[i] = src[rIdx] || src[si];
                     dst[i + 1] = src[si + 1];
-                    dst[i + 2] = src[Math.min(src.length - 4, si + 8) + 2] || src[si + 2];
+                    dst[i + 2] = src[bIdx + 2] || src[si + 2];
                     dst[i + 3] = 255;
                     
-                    // Add noise
-                    if (Math.random() > 0.97) {
-                        const noise = Math.random() * 50;
-                        dst[i] += noise;
-                        dst[i + 1] += noise;
-                        dst[i + 2] += noise;
+                    // Noise
+                    if (Math.random() < noise * 0.1) {
+                        const noiseVal = Math.random() * 80;
+                        dst[i] = Math.min(255, dst[i] + noiseVal);
+                        dst[i + 1] = Math.min(255, dst[i + 1] + noiseVal);
+                        dst[i + 2] = Math.min(255, dst[i + 2] + noiseVal);
+                    }
+                    
+                    // Tracking line distortion
+                    if (isTrackingLine) {
+                        dst[i] = Math.min(255, dst[i] + 50);
+                        dst[i + 1] = Math.min(255, dst[i + 1] + 50);
+                        dst[i + 2] = Math.min(255, dst[i + 2] + 50);
                     }
                 }
             }
         }
 
-        function applyOverlay(w, h) {
-            ctx.globalCompositeOperation = state.blendMode === 'screen' ? 'screen' : 
-                                           state.blendMode === 'multiply' ? 'multiply' : 'source-over';
-
-            switch (state.overlay) {
-                case 'grain':
-                    applyGrainOverlay(w, h);
-                    break;
-                case 'scanlines':
-                    applyScanlinesOverlay(w, h);
-                    break;
-                case 'vignette':
-                    applyVignetteOverlay(w, h);
-                    break;
+        function applyThermalEffect(src, dst, w, h, params) {
+            const palette = params.thermalPalette;
+            const contrast = params.thermalContrast / 100;
+            const invert = params.thermalInvert;
+            
+            const palettes = {
+                'Iron': [
+                    [0, 0, 0], [0, 0, 128], [128, 0, 128], [255, 0, 0], 
+                    [255, 128, 0], [255, 255, 0], [255, 255, 255]
+                ],
+                'Rainbow': [
+                    [0, 0, 128], [0, 0, 255], [0, 255, 255], [0, 255, 0],
+                    [255, 255, 0], [255, 128, 0], [255, 0, 0]
+                ],
+                'White Hot': [
+                    [0, 0, 0], [50, 50, 50], [100, 100, 100], [150, 150, 150],
+                    [200, 200, 200], [230, 230, 230], [255, 255, 255]
+                ]
+            };
+            
+            const colors = palettes[palette] || palettes['Iron'];
+            
+            for (let i = 0; i < src.length; i += 4) {
+                let gray = getGrayscale(src, i);
+                gray = ((gray / 255 - 0.5) * contrast + 0.5) * 255;
+                gray = Math.max(0, Math.min(255, gray));
+                
+                if (invert) gray = 255 - gray;
+                
+                const t = gray / 255 * (colors.length - 1);
+                const idx = Math.floor(t);
+                const frac = t - idx;
+                
+                const c1 = colors[Math.min(idx, colors.length - 1)];
+                const c2 = colors[Math.min(idx + 1, colors.length - 1)];
+                
+                dst[i] = c1[0] + (c2[0] - c1[0]) * frac;
+                dst[i + 1] = c1[1] + (c2[1] - c1[1]) * frac;
+                dst[i + 2] = c1[2] + (c2[2] - c1[2]) * frac;
+                dst[i + 3] = 255;
             }
-
-            ctx.globalCompositeOperation = 'source-over';
         }
 
-        function applyGrainOverlay(w, h) {
+        function applyWatercolorEffect(src, dst, w, h, params) {
+            const blurAmount = params.watercolorBlur;
+            const edgeStrength = params.watercolorEdge / 100;
+            const saturation = params.watercolorSaturation / 100;
+            const paper = params.watercolorPaper;
+            
+            // Simple blur
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    let r = 0, g = 0, b = 0, count = 0;
+                    
+                    for (let ky = -blurAmount; ky <= blurAmount; ky++) {
+                        for (let kx = -blurAmount; kx <= blurAmount; kx++) {
+                            const ny = Math.max(0, Math.min(h - 1, y + ky));
+                            const nx = Math.max(0, Math.min(w - 1, x + kx));
+                            const idx = (ny * w + nx) * 4;
+                            r += src[idx];
+                            g += src[idx + 1];
+                            b += src[idx + 2];
+                            count++;
+                        }
+                    }
+                    
+                    const i = (y * w + x) * 4;
+                    r /= count;
+                    g /= count;
+                    b /= count;
+                    
+                    // Saturation boost
+                    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                    r = gray + (r - gray) * saturation;
+                    g = gray + (g - gray) * saturation;
+                    b = gray + (b - gray) * saturation;
+                    
+                    // Paper texture
+                    if (paper) {
+                        const paperNoise = (Math.random() - 0.5) * 15;
+                        r += paperNoise;
+                        g += paperNoise;
+                        b += paperNoise;
+                    }
+                    
+                    dst[i] = Math.max(0, Math.min(255, r));
+                    dst[i + 1] = Math.max(0, Math.min(255, g));
+                    dst[i + 2] = Math.max(0, Math.min(255, b));
+                    dst[i + 3] = 255;
+                }
+            }
+        }
+
+        // Overlay functions
+        function applyOverlay(w, h, params) {
+            switch (state.overlay) {
+                case 'grain':
+                    applyGrainOverlay(w, h, params);
+                    break;
+                case 'scanlines':
+                    applyScanlinesOverlay(w, h, params);
+                    break;
+                case 'vignette':
+                    applyVignetteOverlay(w, h, params);
+                    break;
+            }
+        }
+
+        function applyGrainOverlay(w, h, params) {
+            const amount = params.grainAmount / 100;
+            const colorGrain = params.grainColor;
+            
             const imageData = ctx.getImageData(0, 0, w, h);
             const data = imageData.data;
             
             for (let i = 0; i < data.length; i += 4) {
-                const noise = (Math.random() - 0.5) * 30;
-                data[i] += noise;
-                data[i + 1] += noise;
-                data[i + 2] += noise;
+                const noise = (Math.random() - 0.5) * 100 * amount;
+                
+                if (colorGrain) {
+                    data[i] += (Math.random() - 0.5) * 80 * amount;
+                    data[i + 1] += (Math.random() - 0.5) * 80 * amount;
+                    data[i + 2] += (Math.random() - 0.5) * 80 * amount;
+                } else {
+                    data[i] += noise;
+                    data[i + 1] += noise;
+                    data[i + 2] += noise;
+                }
             }
             
             ctx.putImageData(imageData, 0, 0);
         }
 
-        function applyScanlinesOverlay(w, h) {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
-            for (let y = 0; y < h; y += 4) {
-                ctx.fillRect(0, y, w, 2);
+        function applyScanlinesOverlay(w, h, params) {
+            const spacing = params.scanlinesSpacing;
+            const opacity = params.scanlinesOpacity / 100;
+            const animate = params.scanlinesAnimate;
+            
+            const offset = animate ? Math.floor(Date.now() / 100) % spacing : 0;
+            
+            ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
+            for (let y = offset; y < h; y += spacing) {
+                ctx.fillRect(0, y, w, Math.ceil(spacing / 2));
             }
         }
 
-        function applyVignetteOverlay(w, h) {
-            const gradient = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, Math.max(w, h) * 0.7);
+        function applyVignetteOverlay(w, h, params) {
+            const size = params.vignetteSize / 100;
+            const intensity = params.vignetteIntensity / 100;
+            const softness = params.vignetteSoftness / 100;
+            
+            const gradient = ctx.createRadialGradient(
+                w/2, h/2, 0, 
+                w/2, h/2, Math.max(w, h) * size
+            );
+            
             gradient.addColorStop(0, 'rgba(0,0,0,0)');
-            gradient.addColorStop(1, 'rgba(0,0,0,0.7)');
+            gradient.addColorStop(1 - softness * 0.5, `rgba(0,0,0,${intensity * 0.5})`);
+            gradient.addColorStop(1, `rgba(0,0,0,${intensity})`);
+            
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, w, h);
-        }
-
-        // Utility
-        function hexToRgb(hex) {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            } : { r: 0, g: 255, b: 136 };
         }
 
         // Event Listeners - Effects
@@ -1150,6 +1700,14 @@
                 document.querySelectorAll('.effect-card[data-effect]').forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
                 state.effect = card.dataset.effect;
+                
+                generateParamsUI(
+                    effectParamsConfig[state.effect],
+                    effectParamsContainer,
+                    state.effectParams[state.effect],
+                    'effect'
+                );
+                
                 renderFrame();
             });
         });
@@ -1159,43 +1717,31 @@
                 document.querySelectorAll('.effect-card[data-overlay]').forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
                 state.overlay = card.dataset.overlay;
+                
+                generateParamsUI(
+                    overlayParamsConfig[state.overlay],
+                    overlayParamsContainer,
+                    state.overlayParams[state.overlay],
+                    'overlay'
+                );
+                
                 renderFrame();
             });
         });
 
-        // Event Listeners - Sliders
-        const sliders = [
+        // Event Listeners - Global Sliders
+        const globalSliders = [
             { id: 'intensitySlider', prop: 'intensity', display: 'intensityValue' },
             { id: 'contrastSlider', prop: 'contrast', display: 'contrastValue' },
             { id: 'brightnessSlider', prop: 'brightness', display: 'brightnessValue' },
             { id: 'saturationSlider', prop: 'saturation', display: 'saturationValue' }
         ];
 
-        sliders.forEach(({ id, prop, display }) => {
+        globalSliders.forEach(({ id, prop, display }) => {
             const slider = document.getElementById(id);
             slider.addEventListener('input', () => {
                 state[prop] = parseInt(slider.value);
                 document.getElementById(display).textContent = slider.value + '%';
-                renderFrame();
-            });
-        });
-
-        // Color picker
-        document.querySelectorAll('.color-swatch').forEach(swatch => {
-            swatch.addEventListener('click', () => {
-                document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-                swatch.classList.add('active');
-                state.edgeColor = swatch.dataset.color;
-                renderFrame();
-            });
-        });
-
-        // Blend mode
-        document.querySelectorAll('.toggle-btn[data-blend]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.toggle-btn[data-blend]').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                state.blendMode = btn.dataset.blend;
                 renderFrame();
             });
         });
@@ -1264,10 +1810,10 @@
             exportLoop();
         });
 
-        // Initialize default selections
-        document.querySelector('.effect-card[data-effect="none"]').classList.add('active');
-        document.querySelector('.effect-card[data-overlay="none"]').classList.add('active');
+        // Initialize
         sourceVideo.loop = state.isLooping;
+        generateParamsUI(effectParamsConfig['none'], effectParamsContainer, {}, 'effect');
+        generateParamsUI(overlayParamsConfig['none'], overlayParamsContainer, {}, 'overlay');
     </script>
 </body>
 </html>
